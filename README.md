@@ -11,3 +11,5 @@ Second step call by this generic way this Foreman API as describe in the swagger
 
 - done user management  
   
+- to add Create Host  
+
