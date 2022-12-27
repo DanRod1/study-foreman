@@ -2,6 +2,12 @@ import sys
 import re
 from math import ceil, floor
 import random
+import pprint
+
+# debug formatage
+pp = pprint.PrettyPrinter(stream=sys.stderr, indent=6, width=120)
+
+
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
 
@@ -59,25 +65,29 @@ def processRobots(robots={},activeRobots=0,stats={},cibles={},enemies=[],hauteur
 
         action += f' {posfrom}'
         
-        print(f'NEAR { near }',file=sys.stderr, flush=True) 
+        pp.pprint('NEAR value :')
+        pp.pprint(near)
+        pp.pprint('STATS value :')
+        pp.pprint(stats)    
         before = len(action)       
         #statsNoFight = dict(filter(lambda elem: elem[0] != 'figthers', stats.items()))
         trends = sorted(stats, key=stats.get)
-
-        #print(f'TRENDS == { trends }',file=sys.stderr, flush=True)
+        
+        pp.pprint('TRENDS value :')
+        pp.pprint(trends))
         possibleChoice = [k for k in near.keys()]
         for i in trends:
             if i in possibleChoice:
                 position = near[i]['position']
                 break
-        #print(f'POSITION == { position }',file=sys.stderr, flush=True)
-        #print(f'CHOICE == { choice }',file=sys.stderr, flush=True)
+        #pprint(f'POSITION == { position }',file=sys.stderr, flush=True)
+        #pprint(f'CHOICE == { choice }',file=sys.stderr, flush=True)
         if 'position'  in locals():
             action += f" {position}"
             distance = getDistBet2Pts(a=position,b=robots[key]['from'])
             robots[key]['tour'] = tour + distance
         after = len(action)
-        print(f'Action == { action }',file=sys.stderr, flush=True)
+        #pprint(f'Action == { action }',file=sys.stderr, flush=True)
         if after - before > 0 :
             robots[key]['action'] = action
         else :
@@ -103,7 +113,7 @@ def getBox(zone=[], position = '', filter=None, recycling = False ) :
     else:
         region = getPositionRegion(hauteur,largeur,x,y)
 
-    #print(f'sizeMap == {sizeMap} recycling == {recycling} ',file=sys.stderr, flush=True)
+    #pprint(f'sizeMap == {sizeMap} recycling == {recycling} ',file=sys.stderr, flush=True)
     for i in zone :
         if sizeMap > 30 and recycling is True :
             regionE = next(iter(i.keys()))
@@ -114,9 +124,9 @@ def getBox(zone=[], position = '', filter=None, recycling = False ) :
                     return f'{x} {y}'
         else:
             regionE = next(iter(i.keys()))
-            #print(f'REGION == {next(iter(i.keys()))}',file=sys.stderr, flush=True)
+            #pprint(f'REGION == {next(iter(i.keys()))}',file=sys.stderr, flush=True)
             posE = i[regionE]
-            #print(f'POSITION == {i[regionE]}',file=sys.stderr, flush=True)
+            #pprint(f'POSITION == {i[regionE]}',file=sys.stderr, flush=True)
             if region == regionE :
                 xE , yE = [ int(j) for j in posE.split()]
                 if xE - 1 == x and yE - 1 == y :
@@ -192,8 +202,8 @@ def getStatByRobots(robots = {} ) :
 def getNearTarget( x=int(0), y=int(0), cibles = {}, max=5, filter = None ):
     location = {}
     dist = 1
-    #print(f'DEBUT getNearTarget CIBLE',file=sys.stderr, flush=True)
-    #print(f'CIBLE == {cibles}',file=sys.stderr, flush=True)
+    #pprint(f'DEBUT getNearTarget CIBLE',file=sys.stderr, flush=True)
+    #pprint(f'CIBLE == {cibles}',file=sys.stderr, flush=True)
     if filter is not None :
         filterCibles = {}
         for k,v in cibles.items() :
@@ -201,28 +211,28 @@ def getNearTarget( x=int(0), y=int(0), cibles = {}, max=5, filter = None ):
                 filterCibles[k] = v
         cible = filterCibles
     while max - dist > 0 :
-        #print(f' From X == {x} Y == {y}',file=sys.stderr, flush=True)
+        #pprint(f' From X == {x} Y == {y}',file=sys.stderr, flush=True)
         increaseRigth = dist
         increaseLeft = dist
         increaseUp = dist
         increaseDown = dist   
         for k,v in cibles.items() :
             ecart = getDistBet2Pts(a=f'{x} {y}',b=f'{v["abs"]} {v["ord"]}') 
-            #print(f'Lookin for case {v} and ecart de {ecart} et max à {max}',file=sys.stderr, flush=True)
+            #pprint(f'Lookin for case {v} and ecart de {ecart} et max à {max}',file=sys.stderr, flush=True)
             if v['abs'] == ( x + increaseRigth ) and v['ord'] == y and location.get('rigth') is None and ecart <= max :
                 location['rigth'] = { 'distance' : dist, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] }
-                #print(f'RIGTH cible == {v["action"]} x == {x} y == {y} location == {location["rigth"]}',file=sys.stderr, flush=True)
+                #pprint(f'RIGTH cible == {v["action"]} x == {x} y == {y} location == {location["rigth"]}',file=sys.stderr, flush=True)
             if v['abs'] == ( x - increaseLeft ) and v['ord'] == y and location.get('left') is None and ecart <= max :
                 location['left'] = { 'distance' : dist, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] }
-                #print(f'LEFT cible == {v["action"]} x == {x} y == {y} location == {location["left"]}',file=sys.stderr, flush=True)
+                #pprint(f'LEFT cible == {v["action"]} x == {x} y == {y} location == {location["left"]}',file=sys.stderr, flush=True)
             if v['abs'] == x and v['ord'] == ( y + increaseDown ) and location.get('down') is None and ecart <= max :
                 location['down'] = { 'distance' : dist, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region'] }
-                #print(f'DOWN cible == {v["action"]} x == {x} y == {y} location == {location["down"]}',file=sys.stderr, flush=True)
+                #pprint(f'DOWN cible == {v["action"]} x == {x} y == {y} location == {location["down"]}',file=sys.stderr, flush=True)
             if v['abs'] == x and v['ord'] == ( y - increaseUp ) and location.get('up') is None and ecart <= max:
                 location['up'] = { 'distance' : dist, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] }
-                #print(f'UP cible == {v["action"]} x == {x} y == {y} location == {location["up"]}',file=sys.stderr, flush=True)
+                #pprint(f'UP cible == {v["action"]} x == {x} y == {y} location == {location["up"]}',file=sys.stderr, flush=True)
         dist += 1
-    #print(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
+    #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
     return location
 
 #taille de la carte pour init du jeu
@@ -298,11 +308,11 @@ while True:
                 id = f'{x}{y}'
                 region = getPositionRegion(hauteur,largeur, x, y )
                 targets[id] = {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }     
-                #print(f'{id} : { targets[id]["action"] }',file=sys.stderr, flush=True)
+                #pprint(f'{id} : { targets[id]["action"] }',file=sys.stderr, flush=True)
             if can_spawn == 1 and recycler == 0 and units == 0 :
                 id = f'{x}{y}'
                 spawns[id] = { 'action' : f'SPAWN 1 {x} {y}' }
-                #print(f'{ spawns[id]  }',file=sys.stderr, flush=True) 
+                #pprint(f'{ spawns[id]  }',file=sys.stderr, flush=True) 
             if owner == 0 and ( x != 0 or y != 0 )  :
                 regionE = getPositionRegion(hauteur,largeur,x,y)
                 tosuck.append({regionE : f'{x} {y}'})
@@ -350,7 +360,7 @@ while True:
 
     if tour > 0 :
         stats = getStatByRobots(robots)
-        #print(f'STATS == { stats }',file=sys.stderr, flush=True)
+        #pprint(f'STATS == { stats }',file=sys.stderr, flush=True)
     else :
         stats = {   'rigth' : 0 , 
             'left' : 0 , 
@@ -360,7 +370,7 @@ while True:
             'figthers' : 0
         }
     
-    #print(f'monMatos : {monMatos} vs sonMatos : {sonMatos} ', file=sys.stderr, flush=True)
+    #pprint(f'monMatos : {monMatos} vs sonMatos : {sonMatos} ', file=sys.stderr, flush=True)
 
     #
     #traitement des créatiosnd'untiées
@@ -371,7 +381,7 @@ while True:
         for key in spawns.keys() :
             spawn += f'{ spawns[key]["action"] };'
             monMatos -= 10
-            #print(f'SPAWN ROBOT { spawns[key]["action"] }',file=sys.stderr, flush=True)
+            #pprint(f'SPAWN ROBOT { spawns[key]["action"] }',file=sys.stderr, flush=True)
             action = re.search('SPAWN 1 (\d+) (\d+)$', spawns[key]["action"] )
             x = action.group(1)
             y = action.group(2)
@@ -393,38 +403,40 @@ while True:
                 'boxByRegion' : boxByRegion
      }
     processedRobots = processRobots(config)
-    print(f'processed robots : {processedRobots}',file=sys.stderr, flush=True)
+
+    pp.pprint("PROCESSED ROBOTS :")
+    pp.pprint(processedRobots)
     move = ''
     for key in processedRobots.keys() :
         if len(processedRobots[key]['action']) > 0 :
             move += f"{ processedRobots[key]['action'] };"   
-    print(f'Processed Move : {move}',file=sys.stderr, flush=True)
+    #pprint(f'Processed Move : {move}',file=sys.stderr, flush=True)
 
     #
     #traitement des recyclers
     #
 
     build = ''
-    #print(f'builds : {builds}', file=sys.stderr, flush=True)
+    #pprint(f'builds : {builds}', file=sys.stderr, flush=True)
     if ( herbe / sizeMap ) > 0.05  or tour > 20 :   
         if ( monMatos > 10 ) or (  activeRobots <= badRobots ) or ( killit is True or tour > 80):
-            #print(f'taux herbe par robot : {herbe} {sizeMap} {( sizeMap - herbe ) / 4 }', file=sys.stderr, flush=True)
-            #print(f'taux occupation par robots : {myoccupation / floor(activeRobots) } {nbrecycler}', file=sys.stderr, flush=True)
+            #pprint(f'taux herbe par robot : {herbe} {sizeMap} {( sizeMap - herbe ) / 4 }', file=sys.stderr, flush=True)
+            #pprint(f'taux occupation par robots : {myoccupation / floor(activeRobots) } {nbrecycler}', file=sys.stderr, flush=True)
             if ( myboxes / sizeMap * 100 )  > nbrecycler or killit is True :
                 for key in builds.keys() :
                     position = getBox(zone = tosuck,position = builds[key]["position"], recycling = True ) 
                     if position is not False :
                         build += f'BUILD { position };'
                         monMatos -= 10
-                        #print(f'MonMatos : {monMatos}', file=sys.stderr, flush=True)
+                        #pprint(f'MonMatos : {monMatos}', file=sys.stderr, flush=True)
                         if monMatos < 10 :
                             break 
                             
     if ( f'{build}{spawn}{move}' != '' ) :
-        #print(f"len de {build}{spawn}{move} = {len('{build}{spawn}{move}')}",file=sys.stderr, flush=True)
+        #pprint(f"len de {build}{spawn}{move} = {len('{build}{spawn}{move}')}",file=sys.stderr, flush=True)
         print(f'{build}{spawn}{move}')
-        #print(f'Active Robots : {activeRobots} Bad Robots : {badRobots}',file=sys.stderr, flush=True)
-        #print( f'myoccupation : {myoccupation} hisoccupation : {hisoccupation}', file=sys.stderr, flush=True)
+        #pprint(f'Active Robots : {activeRobots} Bad Robots : {badRobots}',file=sys.stderr, flush=True)
+        #pprint( f'myoccupation : {myoccupation} hisoccupation : {hisoccupation}', file=sys.stderr, flush=True)
     elif ( f'{build}{spawn}{move}' == 'WAIT' ) :
         print(f'MESSAGE What\'s the fluck with my code ^-^ ?!?!?')
 
