@@ -34,7 +34,6 @@ def processRobots(config = {}, moves = [] ) :
     hauteur = config['hauteur']
     largeur = config['largeur']
     
-    #unUsedRegion = next(iter(dict(sorted(boxByRegion.items(), key=lambda item: item[1]))))
     for key in robots :
         if tour == 0 :
             robots[key]['choose'] = 'wait'
@@ -44,6 +43,16 @@ def processRobots(config = {}, moves = [] ) :
         max = ((largeur / hauteur) * 5 )
         figthers = (stats['figthers'] * 100 / activeRobots )
         locateEnenmiesNear = getBox(zone = enemiesList,position = robots[key]['from'],filter = robots[key]['region'])
+        trous = getBox(zone=tohell,statics=True,position = robots[key]['from'],filter = robots[key]['region'])
+        possible = dict((k,v) for k, v in cibles.items() if v['region'] == robots[key]['region'] )
+
+        if len(trous) / len(possible) > 0.3 :
+            gruyere = True
+        else:
+            gruyere = False
+
+
+        print(f'Case herbe par Region : {trous}', file = sys.stderr, flush=True)
         
         if 0 >= figthers < 10  and  locateEnenmiesNear is not False :
             action = f"MOVE 1"
@@ -59,9 +68,9 @@ def processRobots(config = {}, moves = [] ) :
             near = getNearTarget( x = fabs, y = ford, cibles = cibles, max = ceil(max))    
 
         action += f' {posfrom}'
-        
+        print(f'NEAR == {near}',file = sys.stderr, flush = True )
+
         before = len(action)       
-        #statsNoFight = dict(filter(lambda elem: elem[0] != 'figthers', stats.items()))
 
         possibleChoice = sorted(near, key=near.get('distance'))
         #print(f'choix le plus proche par distance {possibleChoice}',file = sys.stderr, flush = True )
@@ -89,82 +98,107 @@ def processRobots(config = {}, moves = [] ) :
             
     return robots
 
-
-def getBoxByRegion(cibles={}) :
-    regions = sorted(set([v['region'] for k,v in cibles.items() if 'region' in v.keys() ]))
-    taux = {}
-    for i in regions :
-        count = int(len([k for k,v in cibles.items() if v['region'] == i]))   
-        region = i
-        taux.update({ region : count })
-    return taux
-
-def getBox(zone=[], position = '', filter=None, recycling = False ) :
+def getBox(zone=[], position = '', filter=None, recycling = False, statics = False ) :
     x , y = [ int(i) for i in position.split()]
     if filter is not None :
         region = filter
     else:
         region = getPositionRegion(hauteur,largeur,x,y)
+    
+    historique = []
 
     #pprint(f'sizeMap == {sizeMap} recycling == {recycling} ',file=sys.stderr, flush=True)
-    for i in zone :
+    for k,v in zone.items() :
+        regionE = v['region']
+        #print(f'REGION == {regionE}',file=sys.stderr, flush=True)
+        posE = v['action']
+        #print(f'POSITION == {posE}',file=sys.stderr, flush=True)
         if recycling is True :
-            regionE = next(iter(i.keys()))
-            posE = i[regionE]
             if region == regionE :
                 xE , yE = [ int(i) for i in posE.split()]
                 if ( yE - 1 == x ) or ( yE + 1 == x ) :
-                    return f'{x} {y}'
+                    if statics is True :
+                        historique.append(f'{x} {y}')
+                    else :
+                        return f'{x} {y}'
         else:
-            regionE = next(iter(i.keys()))
-            #pprint(f'REGION == {next(iter(i.keys()))}',file=sys.stderr, flush=True)
-            posE = i[regionE]
-            #pprint(f'POSITION == {i[regionE]}',file=sys.stderr, flush=True)
             if region == regionE :
                 xE , yE = [ int(j) for j in posE.split()]
                 if xE - 1 == x and yE - 1 == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE == x and yE -1 == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE + 1 == x and yE -1 == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE -1 == x and yE == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE + 1 == x and yE == y:
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE - 1 == x and yE + 1 == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE == x and yE + 1 == y :
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 if xE + 1 == x and yE + 1 == y:
-                    return f'{xE} {yE}'
+                    if statics is True :
+                        historique.append(f'{xE} {yE}')
+                    else:
+                        return f'{xE} {yE}'
                 else :
                     continue
-    return False
+
+    if statics is True :
+        return historique
+    else:
+        return False
 
 
 def getPositionRegion(hauteur=0,largeur=0, x=0, y=0 ) :
     geoloc = ''
-    if ( y == 0 and x == 0 ) or ( y == 0 and (x / 2 < largeur / 2 ) ):
+    if ( y == 0 and x == 0 ) or ( y == 0 and (x / 2 >= largeur / 2 ) ):
         return 'A'
-    elif y == 0 and ( x / 2 >= largeur / 2 ) :
-        return 'D'
+    elif y == 0 and ( x / 2 < largeur / 2 ) :
+        return 'B'
+    elif y == 0 and ( x >= x/2 and x >= largeur /2  ) :
+        return 'E'
+    elif y == 0 and ( x < x/2 and x >= largeur /2  ) :
+        return 'H'
     if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ):
         return 'A'
     if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) :
         return 'C'
     if x >= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
-        geoloc = 'D'
-    if x >= ( 0.5 * largeur ) and y <= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) :
-        geoloc = 'E'
-    if x <= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
         geoloc = 'B'
+    if x >= ( 0.5 * largeur ) and y <= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) :
+        geoloc = 'D'
+    if x <= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
+        geoloc = 'E'
     if x <= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) : 
-        geoloc = 'H'
+        geoloc = 'G'
     if x >= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
         geoloc = 'F'
     if x >= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
-        geoloc = 'G'
+        geoloc = 'H'
     
     return geoloc
 
@@ -232,7 +266,6 @@ def getNearTarget( x=int(0), y=int(0), cibles = {}, max=5, filter = None ):
 largeur, hauteur = [int(i) for i in input().split()]
 
 # init vars 
-id = 0
 tour = 0
 killit = False
 
@@ -245,7 +278,7 @@ while True:
     hisboxes = 0
     herbe = 0
     idbuild = 0
-    tosuck = []
+    tosuck = {}
     activeRobots = 0
     badRobots = 0
     robots = {}
@@ -255,7 +288,7 @@ while True:
     spawns = {}
     nbrecycler = 0
     todestroy = {}
-    attack=[]
+    tohell = {}
     defense=[]
     sizeMap = hauteur * largeur
     for y in range(hauteur):
@@ -272,19 +305,21 @@ while True:
             elif owner == 0 :
                 hisboxes += 1
             elif scrap_amount == 0:
-                herbe += 1
+                data = {f'{x} {y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }}
+                region = getPositionRegion(hauteur,largeur, x, y )
+                tohell.update(data)
+                #print(f'Case herbe dans la map : {tohell}', file=sys.stderr, flush=True)              
             if can_build == 1 and recycler == 0 and owner == 1:
-                idbuild += recycler
+                idbuild = tour
                 builds[idbuild] = { 'action' : f'BUILD {x} {y}' }   
                 builds[idbuild]['position'] = f'{x} {y}'  
                 builds[idbuild]['region'] = getPositionRegion(hauteur,largeur, x, y )
                 builds[idbuild]['owner'] = owner
             if  owner == 0 and units > 0 :
                 badRobots += units
-                id = f'{x}{y}'
+                data = { f'{x}{y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner } }
                 region = getPositionRegion(hauteur,largeur, x, y )
-                todestroy[id] = {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }
-                attack.append({region:f'{x} {y}'})
+                todestroy.update(data)
             if units >= 1 and owner == 1 and tour == 0 :
                 activeRobots += units
                 robotid += 1
@@ -294,12 +329,12 @@ while True:
                 robots[robotid]['numberUnits'] = units 
                 robots[robotid]['region'] = getPositionRegion(hauteur,largeur, x, y )     
                 robots[robotid]['action'] = f'move 1 {robots[robotid]["from"]} {x} {y}'
-                #print(f'init robots : { robots }',file=sys.stderr, flush=True)
+                print(f'init robots : { robots }',file=sys.stderr, flush=True)
             if units >= 1 and owner == 1 and tour > 0 :
                 activeRobots += units
                 posXY =  [ processedRobots[k]['from'] for k in processedRobots.keys() ]
-                robotid += 1
                 if f'{x} {y}' not in posXY :
+                    robotid += 1
                     robots[robotid] = {'from' : f'{x} {y}' }
                     robots[robotid]['abs'] = x
                     robots[robotid]['ord'] = y
@@ -308,18 +343,20 @@ while True:
                     robots[robotid]['action'] = f'move 1 {robots[robotid]["from"]} {x} {y}'
                     robots[robotid]['tour'] = tour
                     robots[robotid]['choose'] = 'wait'
+                print(f'init robots : { robots }',file=sys.stderr, flush=True)
             if owner < 1 and scrap_amount > 0 and recycler == 0 :
-                id = f'{x}{y}'
                 region = getPositionRegion(hauteur,largeur, x, y )
-                targets[id] = {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }     
+                data = { f'{x} {y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }} 
+                targets.update(data) 
                 #pprint(f'{id} : { targets[id]["action"] }',file=sys.stderr, flush=True)
             if can_spawn == 1 and recycler == 0 and units == 0 :
-                id = f'{x}{y}'
-                spawns[id] = { 'action' : f'SPAWN 1 {x} {y}' }
+                coordonnees = f'{x}{y}'
+                spawns[coordonnees] = { 'action' : f'SPAWN 1 {x} {y}' }
                 #pprint(f'{ spawns[id]  }',file=sys.stderr, flush=True) 
             if owner == 0 and ( x != 0 or y != 0 )  :
-                regionE = getPositionRegion(hauteur,largeur,x,y)
-                tosuck.append({regionE : f'{x} {y}'})
+                region = getPositionRegion(hauteur,largeur,x,y)
+                data = { f'{x} {y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }}
+                tosuck.update(tosuck)
             if recycler == 1 and owner == 1 :
                 nbrecycler += 1
     
@@ -356,9 +393,6 @@ while True:
     else:
         cibles = {**touse,**his }
         killit = False
-    
-    boxByRegion = getBoxByRegion(cibles = cibles)
-    #print(f'Taux de case par Region : {boxByRegion}', file=sys.stderr, flush=True)
 
     if tour > 0 :
         stats = getStatByRobots(robots = processedRobots)
@@ -398,10 +432,9 @@ while True:
                 'activeRobots' : activeRobots,
                 'stats' : stats,
                 'cibles' : cibles,
-                'enemies' : attack,
+                'enemies' : todestroy,
                 'hauteur' : hauteur,
-                'largeur' : largeur,
-                'boxByRegion' : boxByRegion
+                'largeur' : largeur
      }
     if tour == 0 :
         processedRobots = processRobots(config = config)
@@ -414,7 +447,7 @@ while True:
     for key in processedRobots.keys() :
         if len(processedRobots[key]['action']) > 0 :
             move += f"{ processedRobots[key]['action'] };"   
-    #print(f'Processed Move : {move}',file=sys.stderr, flush=True)
+    print(f'Processed Move : {move}',file=sys.stderr, flush=True)
     tmp = move.split(';')
     tmp.pop()
     moveByRobots = []
@@ -424,7 +457,7 @@ while True:
         y = posXY.group(5)
         moveByRobots.append(f'{x} {y}')
 
-    #print(f'Store Move : {moveByRobots}',file=sys.stderr, flush=True)
+    print(f'Store Move : {moveByRobots}',file=sys.stderr, flush=True)
 
     #
     #traitement des recyclers
