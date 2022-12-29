@@ -61,12 +61,12 @@ def processRobots(config = {} ) :
         #print(f'Case herbe par Region : {trous}', file = sys.stderr, flush=True)
         A = ['C','D']
         B = ['D','A']
-        C = ['A','D','E']
-        D = ['B','F','A']
-        E = ['C','D','H']
-        F = ['D','H','E']
+        C = ['A','E']
+        D = ['B','F']
+        E = ['C','G','H']
+        F = ['D','H']
         G = ['E','H']
-        H = ['F','E','G']
+        H = ['F','E']
 
         region = robots[key]['region']
         for nextregion in eval(region) :
@@ -85,14 +85,14 @@ def processRobots(config = {} ) :
             robots[key]['region'] = nextregion[0][0]
             print(f'Action change Regions for the robots: {robots[key]}', file = sys.stderr, flush=True)
         elif index == len(robots) -1 :
-            near = getNearTarget( x = fabs, y = ford, target = cibles, region = robots[key]['region'],used = used )
+            near = getNearTarget( x = fabs, y = ford, target = cibles,used = used )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             print(f'NEAR == {near}',file = sys.stderr, flush = True )  
             #print(f'Action if robots is the last for the Regions: {robots[key]}', file = sys.stderr, flush=True)     
         elif 0 >= (figthers * 100 / activeRobots ) < 10  or (figthers * 100 / activeRobots ) > 85 and  locateEnenmiesNear is not False :       
             robots[key]['choose'] = 'figthers'
-            near = getNearTarget( x = fabs, y = ford, target = todestroy, region = robots[key]['region'],used = used)
+            near = getNearTarget( x = fabs, y = ford, target = todestroy, used = used)
             print(f'NEAR == {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
@@ -196,38 +196,38 @@ def getBox(zone=[], position = '', filter=None, recycling = False, statistics = 
 
 def getPositionRegion(hauteur=0,largeur=0, x=0, y=0 ) :
     geoloc = ''
+    largeur += 1
+    hauteur +=1
     if ( y == 0 and x == 0 ) or ( y == 0 and (x / 2 >= largeur / 2 ) ):
-        return 'A'
-    elif y == 0 and ( x / 2 < largeur / 2 ) :
         return 'B'
-    elif y == 0 and ( x >= x/2 and x >= largeur /2  ) :
-        return 'E'
-    elif y == 0 and ( x < x/2 and x >= largeur /2  ) :
-        return 'H'
-    if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ):
+    elif y == 0 and ( x / 2 < largeur / 2 ) :
         return 'A'
-    if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) :
+    elif y == 0 and ( x >= largeur /2  ) :
+        return 'B'
+    if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) > ( largeur / hauteur ):
+        return 'A'
+    if x <= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) <= ( largeur / hauteur ) :
         return 'C'
-    if x >= ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
+    if x > ( 0.5 * largeur) and y <= ( 0.5 * hauteur ) and ( x / y ) > ( largeur / hauteur / 2 ) :
         geoloc = 'B'
-    if x >= ( 0.5 * largeur ) and y <= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) :
+    if x > ( 0.5 * largeur ) and y <= ( 0.5 * hauteur ) and ( x / y ) <= ( largeur / hauteur / 2 ) :
         geoloc = 'D'
-    if x <= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
+    if x <= ( 0.5 * largeur) and y > ( 0.5 * hauteur ) and ( x / y ) > ( largeur / 2 / hauteur ) :
         geoloc = 'E'
-    if x <= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) < ( hauteur / largeur ) : 
+    if x <= ( 0.5 * largeur) and y > ( 0.5 * hauteur ) and ( x / y ) <= ( largeur / 2 / hauteur ) : 
         geoloc = 'G'
-    if x >= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
+    if x > ( 0.5 * largeur) and y > ( 0.5 * hauteur ) and ( x / y ) > ( largeur / hauteur ) :
         geoloc = 'F'
-    if x >= ( 0.5 * largeur) and y >= ( 0.5 * hauteur ) and ( x / y ) >= ( hauteur / largeur ) :
+    if x > ( 0.5 * largeur) and y > ( 0.5 * hauteur ) and ( x / y ) <= ( largeur / hauteur ) :
         geoloc = 'H'
     
     return geoloc
 
 def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
     max = sqrt((pow(largeur,2) + pow(hauteur,2)))
+    print(f'DEBUT getNearTarget max : {max}',file=sys.stderr, flush=True)
     location = {}
     dist = 1
-    #pprint(f'DEBUT getNearTarget CIBLE',file=sys.stderr, flush=True)
     print(f'CIBLE == {target}',file=sys.stderr, flush=True)
     if region is not None :
         filterTarget = {}
@@ -235,47 +235,43 @@ def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
             if v['region'] == region :
                 filterTarget[k] = v
         target = filterTarget
-    print(f'CIBLE == {target}',file=sys.stderr, flush=True)
-    while max - dist > 0 :
-        increaseRigth = dist
-        increaseLeft = dist
-        increaseUp = dist
-        increaseDown = dist   
-        for k,v in target.items() :
+
+    start = x - 3
+    stop = x + 3
+    rx = list(range(start,stop))
+    start = y - 3
+    stop = y + 3
+    ry = list(range(start,stop))
+    resultat = list()
+    for i in rx:
+        for j in ry :
+            resultat.append(f'{x} {y}')
+
+    print(f'getNearTarget resultat == {resultat}',file=sys.stderr, flush=True)
+    for k,v in target.items() :
+        if k in resultat :
             ecart = getDistBet2Pts(a=f'{x} {y}',b=f'{v["abs"]} {v["ord"]}') 
             location = {tour:{}}
-            if f'{x} {y}' not in used :
-                if v['abs'] == ( x + increaseRigth ) and v['ord'] == y and location[tour].get('rigth') is None :
-                    if dist == 1 :
-                        tmp = {'rigth':list({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })} 
-                        location[tour].update(tmp)
-                    else:
-                        location[tour]['rigth'].append({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })
-                    print(f'RIGTH cible == {v["action"]} x == {x} y == {y} location == {location[tour]["rigth"]}',file=sys.stderr, flush=True)
-                if v['abs'] == ( x - increaseLeft ) and v['ord'] == y and location[tour].get('left') is None :
-                    if dist == 1 :
-                        tmp = {'left':list({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })}
-                        location[tour].update(tmp)
-                    else :
-                        location[tour]['left'].append({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })
-                    print(f'LEFT cible == {v["action"]} x == {x} y == {y} location == {location[tour]["left"]}',file=sys.stderr, flush=True)
-                if v['abs'] == x and v['ord'] == ( y + increaseDown ) and location[tour].get('down') is None :
-                    if dist == 0 :
-                        tmp = {'down':list({'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region']})}
-                        location[tour].update(tmp)
-                    else:
-                        location['down'].append({ 'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region'] })
-                    print(f'DOWN cible == {v["action"]} x == {x} y == {y} location == {location["down"]}',file=sys.stderr, flush=True)
-                if v['abs'] == x and v['ord'] == ( y - increaseUp ) and location[tour].get('up') is None :
-                    if dist == 1 :
-                        tmp = { 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] }
-                        location[tour].update(tmp)  
-                    else:                 
-                        location[tour]['up'].append({ 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] })
-                    print(f'UP cible == {v["action"]} x == {x} y == {y} location == {location["up"]}',file=sys.stderr, flush=True)
+            if x - v["abs"] > 0 and y == v["ord"] :
+                tmp = {'rigth' : v }
+                location[tour].update(tmp)
+                location[tour]['rigth'].update({'distance':ecart})
+            elif x - v["abs"] < 0 and y == v["ord"] :
+                tmp = {'left' : v }
+                location[tour].update(tmp)
+                location[tour]['left'].update({'distance':ecart})
+            elif v["abs"] == 0 and y - v["ord"] > 0 :
+                tmp = {'down' : v }
+                location[tour].update(tmp)
+                location[tour]['down'].update({'distance':ecart})
+            elif v["abs"] == 0 and y - v["ord"] < 0 :
+                tmp = {'up' : v }
+                location[tour].update(tmp)
+                location[tour]['up'].update({'distance':ecart})
+            print(f'CIBLE == {v} with {location[tour]} ',file=sys.stderr, flush=True)
+ 
         dist += 1
-    #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
-    #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
+    print(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
     return location
 
 #taille de la carte pour init du jeu
@@ -370,7 +366,7 @@ while True:
                     robots[robotid]['region'] = getPositionRegion(hauteur,largeur, x, y )     
                     robots[robotid]['action'] = f'move 1 {robots[robotid]["from"]} {x} {y}'
                     robots[robotid]['choose'] = 'wait'
-            if owner < 1 and scrap_amount > 0 and recycler == 0 :
+            if 0 < owner > 0  and scrap_amount > 0 and recycler == 0 :
                 region = getPositionRegion(hauteur,largeur, x, y )
                 data = { f'{x} {y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }} 
                 targets.update(data) 
@@ -394,7 +390,7 @@ while True:
     #
 
     if killit is False or tour > 190:
-        touse = dict((k,v) for k, v in targets.items() if v['owner'] == -1 )
+        touse = dict((k,v) for k, v in targets.items() if 0 < v['owner'] > 0 )
     else:
         touse = todestroy
     his = dict((k,v) for k, v in targets.items() if v['owner'] == 0 )
