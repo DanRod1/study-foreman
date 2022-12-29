@@ -42,8 +42,6 @@ def processRobots(config = {} ) :
     activeRobots = config['activeRobots']
     cibles = config['cibles']
     enemiesList = config['enemies']  
-    hauteur = config['hauteur']
-    largeur = config['largeur']
     used = []
     
     for index, key in enumerate(robots) :
@@ -76,41 +74,41 @@ def processRobots(config = {} ) :
             newregion = { nextregion : len(tmp) }
 
         nextregion = sorted(newregion.items(), key=lambda x:x[0], reverse=True)
-
+        print(f'NextRegion {nextregion[0][0]}',file = sys.stderr, flush = True )  
+        print(f'Case Cibles : {cibles}', file = sys.stderr, flush=True)
         action = f"MOVE 1"
-        if len(trous) * ( 10 / 3 ) > len(possible)  :       
-            near = getNearTarget( x = fabs, y = ford, cibles = cibles, region = nextregion[0][0],used = used ) 
+        if len(trous) * ( 10 / 3 ) > len(possible)  :     
+            near = getNearTarget( x = fabs, y = ford, target = cibles, region = nextregion[0][0],used = used ) 
+            print(f'NEAR == {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             robots[key]['region'] = nextregion[0][0]
             print(f'Action change Regions for the robots: {robots[key]}', file = sys.stderr, flush=True)
-            print(f'NEAR == {near}',file = sys.stderr, flush = True )
         elif index == len(robots) -1 :
-            near = getNearTarget( x = fabs, y = ford, cibles = cibles, region = robots[key]['region'],used = used )
+            near = getNearTarget( x = fabs, y = ford, target = cibles, region = robots[key]['region'],used = used )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
-            #print(f'Action if robots is the last for the Regions: {robots[key]}', file = sys.stderr, flush=True)
-            #print(f'NEAR == {near}',file = sys.stderr, flush = True )       
+            print(f'NEAR == {near}',file = sys.stderr, flush = True )  
+            #print(f'Action if robots is the last for the Regions: {robots[key]}', file = sys.stderr, flush=True)     
         elif 0 >= (figthers * 100 / activeRobots ) < 10  or (figthers * 100 / activeRobots ) > 85 and  locateEnenmiesNear is not False :       
             robots[key]['choose'] = 'figthers'
-            near = getNearTarget( x = fabs, y = ford, cibles = todestroy, region = robots[key]['region'],used = used)
+            near = getNearTarget( x = fabs, y = ford, target = todestroy, region = robots[key]['region'],used = used)
+            print(f'NEAR == {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'Action create Figther for  {robots[key]}',file = sys.stderr, flush = True )
-            #print(f'NEAR == {near}',file = sys.stderr, flush = True )
         elif index > len(robots) - facteurBlitz :
-            near = getNearTarget( x = fabs, y = ford, cibles = blitz, used = used )
+            near = getNearTarget( x = fabs, y = ford, target = blitz, used = used )
+            print(f'NEAR == {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'Action change for blitz War for robot: {robots[key]}', file = sys.stderr, flush=True)
-            #print(f'NEAR == {near}',file = sys.stderr, flush = True )
         else:
-            near = getNearTarget( x = fabs, y = ford, cibles = cibles, region = robots[key]['region'], used = used )
+            near = getNearTarget( x = fabs, y = ford, target = cibles, used = used )
+            print(f'NEAR == {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'Action by default robot: {robots[key]}', file = sys.stderr, flush=True)
-            #print(f'NEAR == {near}',file = sys.stderr, flush = True )
-
         action += f' {robots[key]["from"]}'     
         print(f'Destination {destination} for Robots {robots[key]}',file = sys.stderr, flush = True )
         if destination :
@@ -225,38 +223,39 @@ def getPositionRegion(hauteur=0,largeur=0, x=0, y=0 ) :
     
     return geoloc
 
-def getNearTarget( x=int(0), y=int(0), cibles = {}, region = None, used = [] ):
+def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
     max = sqrt((pow(largeur,2) + pow(hauteur,2)))
     location = {}
     dist = 1
     #pprint(f'DEBUT getNearTarget CIBLE',file=sys.stderr, flush=True)
-    #pprint(f'CIBLE == {cibles}',file=sys.stderr, flush=True)
+    print(f'CIBLE == {target}',file=sys.stderr, flush=True)
     if region is not None :
-        filterCibles = {}
-        for k,v in cibles.items() :
+        filterTarget = {}
+        for k,v in target.items() :
             if v['region'] == region :
-                filterCibles[k] = v
-        cible = filterCibles
+                filterTarget[k] = v
+        target = filterTarget
+    print(f'CIBLE == {target}',file=sys.stderr, flush=True)
     while max - dist > 0 :
         increaseRigth = dist
         increaseLeft = dist
         increaseUp = dist
         increaseDown = dist   
-        for k,v in cibles.items() :
+        for k,v in target.items() :
             ecart = getDistBet2Pts(a=f'{x} {y}',b=f'{v["abs"]} {v["ord"]}') 
             location = {tour:{}}
             if f'{x} {y}' not in used :
                 if v['abs'] == ( x + increaseRigth ) and v['ord'] == y and location[tour].get('rigth') is None :
-                    if dist == 0 :
+                    if dist == 1 :
                         tmp = {'rigth':list({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })} 
-                        location.update(tmp)
+                        location[tour].update(tmp)
                     else:
                         location[tour]['rigth'].append({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })
                     print(f'RIGTH cible == {v["action"]} x == {x} y == {y} location == {location[tour]["rigth"]}',file=sys.stderr, flush=True)
                 if v['abs'] == ( x - increaseLeft ) and v['ord'] == y and location[tour].get('left') is None :
-                    if dist == 0 :
+                    if dist == 1 :
                         tmp = {'left':list({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })}
-                        location.update(tmp)
+                        location[tour].update(tmp)
                     else :
                         location[tour]['left'].append({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })
                     print(f'LEFT cible == {v["action"]} x == {x} y == {y} location == {location[tour]["left"]}',file=sys.stderr, flush=True)
@@ -268,7 +267,7 @@ def getNearTarget( x=int(0), y=int(0), cibles = {}, region = None, used = [] ):
                         location['down'].append({ 'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region'] })
                     print(f'DOWN cible == {v["action"]} x == {x} y == {y} location == {location["down"]}',file=sys.stderr, flush=True)
                 if v['abs'] == x and v['ord'] == ( y - increaseUp ) and location[tour].get('up') is None :
-                    if dist == 0 :
+                    if dist == 1 :
                         tmp = { 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] }
                         location[tour].update(tmp)  
                     else:                 
@@ -276,14 +275,21 @@ def getNearTarget( x=int(0), y=int(0), cibles = {}, region = None, used = [] ):
                     print(f'UP cible == {v["action"]} x == {x} y == {y} location == {location["up"]}',file=sys.stderr, flush=True)
         dist += 1
     #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
+    #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
     return location
 
 #taille de la carte pour init du jeu
+global hauteur
+global Largeur
 largeur, hauteur = [int(i) for i in input().split()]
 
 # init vars 
+global tour
 tour = 0
+global killit
 killit = False
+global cibles
+cibles = {}
 
 
 # game loop
@@ -439,9 +445,7 @@ while True:
     config = { 'robots' : robots,
                 'activeRobots' : activeRobots,
                 'cibles' : cibles,
-                'enemies' : todestroy,
-                'hauteur' : hauteur,
-                'largeur' : largeur
+                'enemies' : todestroy
      }
     
     processedRobots = processRobots(config = config)
