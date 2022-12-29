@@ -246,17 +246,33 @@ def getNearTarget( x=int(0), y=int(0), cibles = {}, region = None, used = [] ):
             ecart = getDistBet2Pts(a=f'{x} {y}',b=f'{v["abs"]} {v["ord"]}') 
             location = {tour:{}}
             if f'{x} {y}' not in used :
-                if v['abs'] == ( x + increaseRigth ) and v['ord'] == y and (location[tour].get('rigth') is None or len(location[tour]['rigth']) <= 4) :
-                    location['rigth'] = { 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] }
+                if v['abs'] == ( x + increaseRigth ) and v['ord'] == y and location[tour].get('rigth') is None :
+                    if dist == 0 :
+                        tmp = {'rigth':list({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })} 
+                        location.update(tmp)
+                    else:
+                        location[tour]['rigth'].append({ 'distance' : ecart, 'position' : f'{x + increaseRigth} {y}', 'choose' : 'rigth', 'region' : v['region'] })
                     print(f'RIGTH cible == {v["action"]} x == {x} y == {y} location == {location[tour]["rigth"]}',file=sys.stderr, flush=True)
-                if v['abs'] == ( x - increaseLeft ) and v['ord'] == y and (location[tour].get('left') is None or len(location[tour]['left']) <= 4) :
-                    location['left'] = { 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] }
+                if v['abs'] == ( x - increaseLeft ) and v['ord'] == y and location[tour].get('left') is None :
+                    if dist == 0 :
+                        tmp = {'left':list({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })}
+                        location.update(tmp)
+                    else :
+                        location[tour]['left'].append({ 'distance' : ecart, 'position' : f'{x - increaseLeft} {y}', 'choose' : 'left', 'region' : v['region'] })
                     print(f'LEFT cible == {v["action"]} x == {x} y == {y} location == {location[tour]["left"]}',file=sys.stderr, flush=True)
-                if v['abs'] == x and v['ord'] == ( y + increaseDown ) and (location[tour].get('down') is None or len(location[tour]]['down']) <= 4) :
-                    location['down'] = { 'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region'] }
+                if v['abs'] == x and v['ord'] == ( y + increaseDown ) and location[tour].get('down') is None :
+                    if dist == 0 :
+                        tmp = {'down':list({'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region']})}
+                        location[tour].update(tmp)
+                    else:
+                        location['down'].append({ 'distance' : ecart, 'position' : f'{x} {y +  increaseDown}', 'choose' : 'down', 'region' : v['region'] })
                     print(f'DOWN cible == {v["action"]} x == {x} y == {y} location == {location["down"]}',file=sys.stderr, flush=True)
-                if v['abs'] == x and v['ord'] == ( y - increaseUp ) and (location[tour].get('up') is None or len(location[tour]['up']) <= 4) :
-                    location['up'] = { 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] }
+                if v['abs'] == x and v['ord'] == ( y - increaseUp ) and location[tour].get('up') is None :
+                    if dist == 0 :
+                        tmp = { 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] }
+                        location[tour].update(tmp)  
+                    else:                 
+                        location[tour]['up'].append({ 'distance' : ecart, 'position' : f'{x} {y - increaseUp}', 'choose' : 'up', 'region' : v['region'] })
                     print(f'UP cible == {v["action"]} x == {x} y == {y} location == {location["up"]}',file=sys.stderr, flush=True)
         dist += 1
     #pprint(f'FIN getNearTarget LOCATION == {location}',file=sys.stderr, flush=True)
