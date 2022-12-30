@@ -410,7 +410,7 @@ while True:
     elif free > 30 :
         cibles = {**his }
         killit = False
-    elif 5 < myoccupation - hisoccupation > -5 :
+    elif 5 < myoccupation - hisoccupation > -5 and myoccupation - hisoccupation < 5 :
         cibles = {**his,**touse}
         killit = False
     else:
