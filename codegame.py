@@ -279,7 +279,9 @@ def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
 #taille de la carte pour init du jeu
 global hauteur
 global Largeur
-largeur, hauteur = [int(i) for i in input().split()]
+#largeur, hauteur = [int(i) for i in input().split()]
+datafile = open('/home/drodriguez/dev/study-foreman/datacodegame.txt')
+largeur, hauteur = [int(i) for i in datafile.readline().split() ]
 
 # init vars 
 global tour
@@ -287,11 +289,11 @@ tour = 0
 global killit
 killit = False
 
-
 # game loop
-while True:
+while True :
     start_time = time.time()
-    monMatos, sonMatos = [int(i) for i in input().split()]
+    monMatos, sonMatos = [int(i) for i in datafile.readline().split()]
+    #monMatos, sonMatos = [int(k) for k in input().split()]
     myboxes = 0
     hisboxes = 0
     herbe = 0
@@ -311,14 +313,20 @@ while True:
     defense=[]
     sizeMap = hauteur * largeur
     for y in range(hauteur):
+        line = datafile.readline().split()
+        if len(line) == 1 :
+            break
         for x in range(largeur):
-            
+            line = datafile.readline().split()
+            if len(line) == 1 :
+                break
             # scrap_amount: facteur de disponibilité de la cas
             # owner: 1 = me, 0 = foe, -1 = neutral attribut case
             # units: mon nombre d'untié sur cette case 
             # recycler: présence d'un recycler si oui à 1
             # 
-            scrap_amount, owner, units, recycler, can_build, can_spawn, in_range_of_recycler = [int(k) for k in input().split()]
+            scrap_amount, owner, units, recycler, can_build, can_spawn, in_range_of_recycler = [int(i) for i in datafile.readline().split()]
+            #scrap_amount, owner, units, recycler, can_build, can_spawn, in_range_of_recycler = [int(k) for k in input().split()]
             if owner == 1 :
                 myboxes += 1
                 region = getPositionRegion(hauteur,largeur, x, y )
