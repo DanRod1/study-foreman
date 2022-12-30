@@ -12,8 +12,8 @@ import time
 #fonction perso
 def chooseInNearList(choices = {}, robot = {}, herbes = [], used=[] ):
         possibleChoice = sorted(choices, key=choices.get('distance'))
-        print(f'chooseInNearList :les choix le plus proches {possibleChoice} pour robot {robot}',file = sys.stderr, flush = True )
-        print(f'chooseInNearList :les filtres used {used} et les herbes {herbes}',file = sys.stderr, flush = True )
+        #print(f'chooseInNearList :les choix le plus proches {possibleChoice} pour robot {robot}',file = sys.stderr, flush = True )
+        #print(f'chooseInNearList :les filtres used {used} et les herbes {herbes}',file = sys.stderr, flush = True )
         for i in possibleChoice:
             position = choices[i]['position']
             if position not in herbes and position not in used :
@@ -75,38 +75,38 @@ def processRobots(config = {} ) :
             newregion = { nextregion : len(tmp) }
 
         nextregion = sorted(newregion.items(), key=lambda x:x[0], reverse=True)
-        print(f'processRobots :set de NextRegion si besoin : {nextregion[0][0]}',file = sys.stderr, flush = True )  
+        #print(f'processRobots :set de NextRegion si besoin : {nextregion[0][0]}',file = sys.stderr, flush = True )  
         print(f'processRobots : Cases Cibles disponibles  : {cibles}', file = sys.stderr, flush=True)
         action = f"MOVE 1"
         if len(trous) * ( 10 / 3 ) > len(possible)  :     
             near = getNearTarget( x = fabs, y = ford, target = cibles, region = nextregion[0][0],used = used ) 
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             robots[key]['region'] = nextregion[0][0]
-            print(f'processRobots : Action change Regions for the robots {robots[key]}', file = sys.stderr, flush=True)
+            #print(f'processRobots : Action change Regions for the robots {robots[key]}', file = sys.stderr, flush=True)
         elif index == len(robots) -1 :
             near = getNearTarget( x = fabs, y = ford, target = cibles,used = used )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )  
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )  
             #print(f'Action if robots is the last for the Regions: {robots[key]}', file = sys.stderr, flush=True)     
         elif 0 >= (figthers * 100 / activeRobots ) < 10  or (figthers * 100 / activeRobots ) > 85 and  locateEnenmiesNear is not False :       
             robots[key]['choose'] = 'figthers'
             near = getNearTarget( x = fabs, y = ford, target = todestroy, used = used)
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'processRobots : Action create Figther for  {robots[key]}',file = sys.stderr, flush = True )
         elif index > len(robots) - facteurBlitz :
             near = getNearTarget( x = fabs, y = ford, target = blitz, used = used )
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'Action change for blitz War for robot: {robots[key]}', file = sys.stderr, flush=True)
         else:
             near = getNearTarget( x = fabs, y = ford, target = cibles, used = used )
-            print(f'processRobots : Determination des Case NEAR  {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR  {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'processRobots : Action by default pour robot {robots[key]}', file = sys.stderr, flush=True)
@@ -386,21 +386,6 @@ while True:
                 nbrecycler += 1
     
     print(f' Init : Robots En debut de tour {tour} : { robots }',file=sys.stderr,end="\n\n",flush=True)
-    #
-    #traitement des unitées présente
-    #
-
-    config = { 'robots' : robots,
-                'activeRobots' : activeRobots,
-                'cibles' : cibles,
-                'enemies' : todestroy
-     }
-    
-    processedRobots = processRobots(config = config)
-
-    for k in processedRobots.keys() :
-        print(f'main : Processed Robot on tour {tour} : {processedRobots[k]}',file=sys.stderr,end="\n\n",flush=True)
-
     
     #
     # initizialisation des données de départ
@@ -433,6 +418,21 @@ while True:
     else:
         cibles = {**touse }
         killit = False
+
+    #
+    #traitement des unitées présente
+    #
+
+    config = { 'robots' : robots,
+                'activeRobots' : activeRobots,
+                'cibles' : cibles,
+                'enemies' : todestroy
+     }
+    
+    processedRobots = processRobots(config = config)
+
+    for k in processedRobots.keys() :
+        print(f'main : Processed Robot on tour {tour} : {processedRobots[k]}',file=sys.stderr,end="\n\n",flush=True)
 
     #
     #traitement des créatiosnd'untiées
