@@ -374,7 +374,7 @@ while True :
                     robots[robotid]['region'] = getPositionRegion(hauteur,largeur, x, y )     
                     robots[robotid]['action'] = f'move 1 {robots[robotid]["from"]} {x} {y}'
                     robots[robotid]['choose'] = 'wait'
-            if 0 < owner > 0  and scrap_amount > 0 and recycler == 0 :
+            if owner < 0 or owner > 0  and scrap_amount > 0 and recycler == 0 :
                 region = getPositionRegion(hauteur,largeur, x, y )
                 data = { f'{x} {y}' : {'abs':int(x), 'ord': int(y), 'action' : f'{x} {y}', 'region' : region, 'owner' : owner }} 
                 targets.update(data) 
