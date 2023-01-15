@@ -163,16 +163,20 @@ def getNodeComplex(world={}, nbNodes = 0 ) :
     idNode = 1
     result = {}
     print(f"getNodeComplex with world Node {world}", file=sys.stderr, flush=True)
-    originalShame = '.'
+    originalShame = 0
+    count = 0
     for actual, datas in world.items():
         datas+= '.'
-        originalShame += '.'
+        originalShame += 1
         world[actual] = datas
         print(f'getNodeComplex {world} add dot in preparation of bible dict setting', file=sys.stderr, flush=True)
     bible = {}
-    y=len(originalShame)
-    world[y] = originalShame
-    print(f'getNodeComplex {world} has forget homelie {originalShame} for preparation of bible dict setting', file=sys.stderr, flush=True)
+    data = ''
+    while count <= originalShame:
+        data += '.'
+        count += 1
+    world[originalShame] = data
+    print(f'getNodeComplex {world} has forget allegory of {data} for preparation of bible dict setting', file=sys.stderr, flush=True)
 
     for y in range(0,len((list(world.keys())))) :
         line = []
@@ -186,6 +190,7 @@ def getNodeComplex(world={}, nbNodes = 0 ) :
     bible[y+1] = hell
     print(f"getNodeComplex bible written {bible}", file=sys.stderr, flush=True)
     coordonate = []
+    lines = []
     while lines :
         tmp = lines.pop(0)
         coordonate.append(tmp)
