@@ -159,7 +159,7 @@ def getNodeDiag(world={} ) :
         idNode += 1
     return result       
 
-def getNodeComplex(world={}, nbNodes = 0 ) :
+def getNodeComplex(world={} ) :
     idNode = 1
     result = {}
     print(f"getNodeComplex with world Node {world}", file=sys.stderr, flush=True)
@@ -167,9 +167,10 @@ def getNodeComplex(world={}, nbNodes = 0 ) :
     count = 0
     for actual, datas in world.items():
         datas+= '.'
+        if actual == 0 : first = [f'{c} {actual}' for c in datas if datas[originalShame] == '0' ] 
         originalShame += 1
-        world[actual] = datas
-        print(f'getNodeComplex {world} add dot in preparation of bible dict setting', file=sys.stderr, flush=True)
+        world[actual] = datas       
+    print(f'getNodeComplex {world} add dot in preparation of bible dict setting and set First x/y {first[0]}', file=sys.stderr, flush=True)
     bible = {}
     data = ''
     while count <= originalShame:
@@ -177,43 +178,61 @@ def getNodeComplex(world={}, nbNodes = 0 ) :
         count += 1
     world[originalShame] = data
     print(f'getNodeComplex {world} has forget allegory of {data} for preparation of bible dict setting', file=sys.stderr, flush=True)
-
     for y in range(0,len((list(world.keys())))) :
         line = []
-        print(f'getNodeComplex writting line {y} of dict {bible}', file=sys.stderr, flush=True)
+        #print(f'getNodeComplex writting line {y} of dict {bible}', file=sys.stderr, flush=True)
         for x in range(0,len((list(world.keys())))) :
-            tmp = [f'{x} {y}'] if world[y][x] == '0' else ['-1 -1']
+            tmp = (x,y) if world[y][x] == '0' else (-1,-1)
             line.append(tmp)
         bible[y] = line 
-        print(f'getNodeComplex publishing line {y} of dict {bible}', file=sys.stderr, flush=True)
-    hell = [['-1 -1'] for x in range(0,len((list(world.keys())))) ]
-    bible[y+1] = hell
+        #print(f'getNodeComplex publishing line {y} of dict {bible}', file=sys.stderr, flush=True)
     print(f"getNodeComplex bible written {bible}", file=sys.stderr, flush=True)
-    coordonate = []
-    lines = []
-    while lines :
-        tmp = lines.pop(0)
-        coordonate.append(tmp)
-        x,y = [int(i) for i in tmp.split(' ')]
-        print(f"getNodeComplex coordonate from lines {tmp} {x} {y}", file=sys.stderr, flush=True) 
-        coordonate.append(lines[0]) if len((list(world.keys()))) - 1 > x else coordonate.append('-1 -1')
+    for line, coordonate in bible.items() :
+        #print(f"getNodeComplex first set with mask {mask} and counter {count} at bible line {line}", file=sys.stderr, flush=True)
+        nodes = []
+        index = line
+        hell = coordonate[-1]
+        endLine = line
+        for node in coordonate :
+            if node != hell :
+                nodes.append(node)
+                column = coordonate.index(node)
+                print(f"getNodeComplex node {node} added in nodes from {coordonate} column {column}", file=sys.stderr, flush=True)
+                downs = [ v[column] for k,v in bible.items() if k > endLine ]
+            else:
+                column = coordonate.index(node)
+                print(f"getNodeComplex node {node} is hole due to hell at index {column} remember this column", file=sys.stderr, flush=True)
+                downs = [ v[column] for k,v in bible.items() if k > endLine ]  
+                print(f"getNodeComplex determine downs {downs} even this {column} does not be used", file=sys.stderr, flush=True)
+                coordonate.pop(0)            
+            for i in range(index+1,len(coordonate)) :
+                if i == len(coordonate)-1 and coordonate[i] == hell and len(nodes) == 1 :
+                    nodes.append(coordonate[i])
+                    print(f"getNodeComplex right node {coordonate[i]} added in nodes due to end coordonate, add default {hell}", file=sys.stderr, flush=True)
+                elif i < len(coordonate)-1 and coordonate[i] != hell and len(nodes) == 1 :
+                        nodes.append(coordonate[i])
+                        print(f"getNodeComplex right node {coordonate[i]} added in nodes index {i}", file=sys.stderr, flush=True)
+                        break
+            for j in downs :
+                print(f"getNodeComplex vertical columns values are {downs}", file=sys.stderr, flush=True)
+                if j != [hell] and len(nodes) == 2 : 
+                    nodes.append(j)
+                    print(f"getNodeComplex down node {j} added in nodes with vertical column {downs}, value {j} selected with filter {hell}", file=sys.stderr, flush=True)
+                    break
+                elif len(nodes) == 2 and downs.index(j) == len(downs)-1 :
+                    nodes.append([hell])
+                    print(f"getNodeComplex down not found in {downs} default {[hell]}", file=sys.stderr, flush=True)
+            if len(nodes) == 3 : 
+                result[idNode] = ' '.join([XY[0] for XY in nodes ])
+                idNode += 1
+                print(f"getNodeComplex nodes {' '.join([XY[0] for XY in nodes ])} and store as result in dict {result}", file=sys.stderr, flush=True)
+                nodes = []  
+                print(f"getNodeComplex nodes refresh {nodes} for next nodes in dict result", file=sys.stderr, flush=True)
 
-        try : 
-            index = columns.index([i for i in columns if re.match(rf'{x}\s\d',i) ][0])
-            down = columns.pop(index)
-            print(f"getNodeComplex remove from columns down {down} index {index}", file=sys.stderr, flush=True)
-        except :
-            down = None
-            print(f"getNodeComplex down {down} ", file=sys.stderr, flush=True)
-        coordonate.append(down)  if down is not None else coordonate.append('-1 -1')
-        print(f"getNodeComplex coordonate {coordonate}", file=sys.stderr, flush=True)
-        result[idNode] = coordonate
-        coordonate = []        
-        idNode += 1
-        #['0 0', '1 0', '3 0', '0 1', '2 1', '3 1', '1 2', '3 2', '0 3', '1 3', '2 3']
-        #['0 0', '0 1', '0 3', '1 0', '1 2', '1 3', '2 1', '2 3', '3 0', '3 1', '3 2']
+            print(f"getNodeComplex endline for coordonate at {endLine} has to process new line in result for node id {idNode} ", file=sys.stderr, flush=True)      
+            print(f"getNodeComplex bible is ready for result {result}", file=sys.stderr, flush=True) 
+        endLine = line+1
 
-    print(f"getNodeComplex coordonate {result}", file=sys.stderr, flush=True) 
     return result       
 
 def main():
@@ -252,7 +271,7 @@ def main():
         return result
     else :
         print(f"main case for complex world {world} {nbNodes}", file=sys.stderr, flush=True)
-        result = getNodeComplex(world=world, nbNodes=nbNodes)    
+        result = getNodeComplex(world=world)    
         return result 
 # Don't let the machines win. You are humanity's last hope...
 global width,heigth,world
