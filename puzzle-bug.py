@@ -4,7 +4,7 @@ from math import ceil
 import numpy as np
 
 class isdefine :
-  """What the fuck with perlouze Boa """
+  """What the fuck with prelouze Boa """
   def __init__(self,variable):
     if len(variable) == 0 : return None
   def get(variable) :
@@ -12,6 +12,15 @@ class isdefine :
         return False
     else :
         return variable
+  def convInDictArrTuple(bible={}):
+    oldTestament = {}
+    for key,array in bible.items():
+        elements = []
+        while array:
+            x = array.pop(0)
+            elements.append(' '.join(iter(f'{x[0]}{x[1]}')))
+        oldTestament[key] = elements
+    return oldTestament
 
 
 def getNodeExemple(world={} ) :
@@ -173,43 +182,47 @@ def getNodeDiag(world={} ) :
 def getNodeComplex(world={} ) :
     idNode = 1
     result = {}
-    print(f"getNodeComplex with world Node {world}", file=sys.stderr, flush=True)
+    #print(f"getNodeComplex with world Node {world}", file=sys.stderr, flush=True)
     bible = {}
-    print(f'getNodeComplex {world} for writting bible dict setting', file=sys.stderr, flush=True)
+    newTestament = {}
+    #print(f'getNodeComplex {world} for writting bible dict setting', file=sys.stderr, flush=True)
     for y in range(0,len((list(world.keys())))) :
         line = []
-        print(f'getNodeComplex writting line {y} of dict {bible}', file=sys.stderr, flush=True)
+        #print(f'getNodeComplex writting line {y} of dict {bible}', file=sys.stderr, flush=True)
         for x in range(0,len((list(world.keys())))) :
             line.append((x,y)) if world[y][x] == '0' else line.append((-1,-1))
         bible[y] = line 
-        print(f'getNodeComplex publishing line {y} of dict {bible}', file=sys.stderr, flush=True)
+        #print(f'getNodeComplex publishing line {y} of dict {bible}', file=sys.stderr, flush=True)
     print(f"getNodeComplex bible writted : {bible}", file=sys.stderr, flush=True)
     for line, coordonate in bible.items() :
         dcount = 0
-        print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)
+        #print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)
         column = [ v[0] for k,v in bible.items() if k > line ]
         lineY = [ coordonate[line] for line in range(0,len(list(bible.keys()))) ] 
         filter = set([(-1,-1)])
         filterLlines = [a for a in lineY if a not in filter]
-        print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
-        print(f"getNodeComplex filterLlines {filterLlines}", file=sys.stderr, flush=True)
+        #print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
+        #print(f"getNodeComplex filterLlines {filterLlines}", file=sys.stderr, flush=True)
         while filterLlines : 
             node = filterLlines.pop(0) 
             column = [ v[dcount] for k,v in bible.items() if k > line ]
             dcount +=1
-            print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)  
-            print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
-            print(f"getNodeComplex node {node}", file=sys.stderr, flush=True)
+            #print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)  
+            #print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
+            #print(f"getNodeComplex node {node}", file=sys.stderr, flush=True)
             neighbour = filterLlines[0] if len(filterLlines) > 0 else (-1,-1)
-            print(f"getNodeComplex neighbour {neighbour}", file=sys.stderr, flush=True)
+            #print(f"getNodeComplex neighbour {neighbour}", file=sys.stderr, flush=True)
             filterColumns = [a for a in column if a not in filter]
-            print(f"getNodeComplex filterColumns {filterColumns}", file=sys.stderr, flush=True)
+            #print(f"getNodeComplex filterColumns {filterColumns}", file=sys.stderr, flush=True)
             down = filterColumns.pop(0) if len(filterColumns) > 0 else (-1,-1)
-        print(f"getNodeComplex resultat {[node,neighbour,down]}", file=sys.stderr, flush=True)
-        if isdefine(node) is None and isdefine(neighbour) is None and isdefine(down) is None :
-            result[idNode] = [node,neighbour,down]
-            idNode += 1           
-    return result
+            #print(f"getNodeComplex down {down}", file=sys.stderr, flush=True)
+            if isdefine(node) is not None and isdefine(neighbour) is not None and isdefine(down) is not None :
+                result[idNode] = [node,neighbour,down]
+                idNode += 1 
+    print(f"getNodeComplex bible {bible}", file=sys.stderr, flush=True)
+    newTestament = isdefine.convInDictArrTuple(bible=bible)    
+    print(f"getNodeComplex newTestament {newTestament}", file=sys.stderr, flush=True)    
+    return newTestament
 
 def main():
     if len(list(np.unique([v for k,v in world.items() if v.count('0') > 0 ]))) == 1:
