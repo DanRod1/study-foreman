@@ -204,8 +204,8 @@ def getNodeComplex(world={} ) :
         #print(f"getNodeComplex filterLlines {filterLlines}", file=sys.stderr, flush=True)
         while filterLlines : 
             node = filterLlines.pop(0) 
-            column = [ v[dcount] for k,v in bible.items() if k > line ]
-            dcount +=1
+            decalage = node[0]
+            column = [ v[decalage] for k,v in bible.items() if k > line ]
             #print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)  
             #print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
             #print(f"getNodeComplex node {node}", file=sys.stderr, flush=True)
@@ -264,9 +264,12 @@ def main():
         return result 
 # Don't let the machines win. You are humanity's last hope...
 global width,heigth,world
-width = int(input())  # the number of cells on the X axis
-heigth = int(input())  # the number of cells on the Y axis
-world = {}
+#width = int(input())  # the number of cells on the X axis
+width = 5
+#heigth = int(input())  # the number of cells on the Y axis
+heigth = 5
+# world= {}
+world = {0: '0.0..', 1: '0.000', 2: '0....', 3: '0....', 4: '0.000', 5:'0.0..'}
 
 for i in range(heigth):
     line = input()  # width characters, each either 0 or .
