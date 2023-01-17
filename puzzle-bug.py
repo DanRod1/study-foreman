@@ -18,10 +18,9 @@ class isdefine :
         elements = []
         while array:
             x = array.pop(0)
-            elements.append(' '.join(iter(f'{x[0]}{x[1]}')))
+            elements.append(f'{x[0]} {x[1]}')
         oldTestament[key] = elements
     return oldTestament
-
 
 def getNodeExemple(world={} ) :
     result = {}
@@ -218,10 +217,11 @@ def getNodeComplex(world={} ) :
             #print(f"getNodeComplex down {down}", file=sys.stderr, flush=True)
             if isdefine(node) is not None and isdefine(neighbour) is not None and isdefine(down) is not None :
                 result[idNode] = [node,neighbour,down]
-                idNode += 1 
-    print(f"getNodeComplex bible {bible}", file=sys.stderr, flush=True)
-    newTestament = isdefine.convInDictArrTuple(bible=bible)    
-    print(f"getNodeComplex newTestament {newTestament}", file=sys.stderr, flush=True)    
+                print(f"getNodeComplex resultat {[node,neighbour,down]}", file=sys.stderr, flush=True)
+                idNode += 1    
+    newTestament = isdefine.convInDictArrTuple(bible=result)
+    print(f"getNodeComplex result {result}", file=sys.stderr, flush=True)
+    print(f"getNodeComplex newTestament {newTestament}", file=sys.stderr, flush=True)
     return newTestament
 
 def main():
