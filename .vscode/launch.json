@@ -1,10 +1,10 @@
 {
     "name": "Python",
     "type": "python",
-    "pythonPath":"${config.python.pythonPath}", 
+    "python":"${config.python.pythonPath}", 
     "request": "launch",
     "stopOnEntry": true,
-    "console": "none",
+    "console": "internalConsole",
     "program": "${file}",
     "cwd": "${workspaceRoot}",
     "debugOptions": [
