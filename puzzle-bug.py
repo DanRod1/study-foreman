@@ -4,7 +4,7 @@ from math import ceil
 import numpy as np
 
 class isdefine :
-  """What the fuck with prelouze Boa """
+  """What the fuck with perlouze Boa """
   def __init__(self,variable):
     if len(variable) == 0 : return None
   def get(variable) :
