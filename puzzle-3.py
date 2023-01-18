@@ -204,8 +204,8 @@ def getNodeComplex(world={} ) :
         #print(f"getNodeComplex filterLlines {filterLlines}", file=sys.stderr, flush=True)
         while filterLlines : 
             node = filterLlines.pop(0) 
-            column = [ v[dcount] for k,v in bible.items() if k > line ]
-            dcount +=1
+            decalage = node[0]
+            column = [ v[decalage] for k,v in bible.items() if k > line ]
             #print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)  
             #print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
             #print(f"getNodeComplex node {node}", file=sys.stderr, flush=True)
