@@ -12,9 +12,9 @@ class isdefine :
         return False
     else :
         return variable
-  def convInDictArrTuple(bible={}):
+  def convInDictArrTuple(object={}):
     oldTestament = {}
-    for key,array in bible.items():
+    for key,array in object.items():
         elements = []
         while array:
             x = array.pop(0)
@@ -188,16 +188,15 @@ def getNodeComplex(world={} ) :
     for y in range(0,len((list(world.keys())))) :
         line = []
         #print(f'getNodeComplex writting line {y} of dict {bible}', file=sys.stderr, flush=True)
-        for x in range(0,len((list(world.keys())))) :
+        for x in range(0,len((list(world[y])))) :
             line.append((x,y)) if world[y][x] == '0' else line.append((-1,-1))
         bible[y] = line 
         #print(f'getNodeComplex publishing line {y} of dict {bible}', file=sys.stderr, flush=True)
     print(f"getNodeComplex bible writted : {bible}", file=sys.stderr, flush=True)
     for line, coordonate in bible.items() :
-        dcount = 0
         #print(f"getNodeComplex decalage de {dcount}", file=sys.stderr, flush=True)
         column = [ v[0] for k,v in bible.items() if k > line ]
-        lineY = [ coordonate[line] for line in range(0,len(list(bible.keys()))) ] 
+        lineY = [ xy for xy in coordonate ] 
         filter = set([(-1,-1)])
         filterLlines = [a for a in lineY if a not in filter]
         #print(f"getNodeComplex column {column}", file=sys.stderr, flush=True)
@@ -219,7 +218,7 @@ def getNodeComplex(world={} ) :
                 result[idNode] = [node,neighbour,down]
                 print(f"getNodeComplex resultat {[node,neighbour,down]}", file=sys.stderr, flush=True)
                 idNode += 1    
-    newTestament = isdefine.convInDictArrTuple(bible=result)
+    newTestament = isdefine.convInDictArrTuple(object=result)
     print(f"getNodeComplex result {result}", file=sys.stderr, flush=True)
     print(f"getNodeComplex newTestament {newTestament}", file=sys.stderr, flush=True)
     return newTestament
@@ -264,16 +263,9 @@ def main():
         return result 
 # Don't let the machines win. You are humanity's last hope...
 global width,heigth,world
-#width = int(input())  # the number of cells on the X axis
-width = 5
-#heigth = int(input())  # the number of cells on the Y axis
-heigth = 5
-# world= {}
 world = {0: '0.0..', 1: '0.000', 2: '0....', 3: '0....', 4: '0.000', 5:'0.0..'}
-
-for i in range(heigth):
-    line = input()  # width characters, each either 0 or .
-    world[i] = line
+width = 5
+heigth = 6
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr, flush=True)

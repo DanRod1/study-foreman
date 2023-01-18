@@ -1,9 +1,9 @@
 {
     "name": "Python",
     "type": "python",
-    "python":"${config.python.pythonPath}", 
+    "python": "${config.python.pythonPath}",
     "request": "launch",
-    "stopOnEntry": true,
+    "stopOnEntry": "True",
     "console": "internalConsole",
     "program": "${file}",
     "cwd": "${workspaceRoot}",
@@ -12,5 +12,17 @@
         "WaitOnNormalExit",
         "RedirectOutput"
     ],
-    "env": {"name":"value"}
+    "env": {
+        "name": "value"
+    },
+    "configurations": [
+        
+        {
+            "name": "Module Python",
+            "type": "python",
+            "request": "launch",
+            "module": "default",
+            "justMyCode": true
+        }
+    ]
 }
