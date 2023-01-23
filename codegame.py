@@ -3,7 +3,6 @@ import re
 from math import ceil, pow, sqrt
 import time
 
-
 # debug formatage
 
 # Auto-generated code below aims at helping you parse
@@ -12,8 +11,8 @@ import time
 #fonction perso
 def chooseInNearList(choices = {}, robot = {}, herbes = [], used=[] ):
         possibleChoice = sorted(choices, key=choices.get('distance'))
-        print(f'chooseInNearList :les choix le plus proches {possibleChoice} pour robot {robot}',file = sys.stderr, flush = True )
-        print(f'chooseInNearList :les filtres used {used} et les herbes {herbes}',file = sys.stderr, flush = True )
+        #print(f'chooseInNearList :les choix le plus proches {possibleChoice} pour robot {robot}',file = sys.stderr, flush = True )
+        #print(f'chooseInNearList :les filtres used {used} et les herbes {herbes}',file = sys.stderr, flush = True )
         for i in possibleChoice:
             position = choices[i]['position']
             if position not in herbes and position not in used :
@@ -38,7 +37,7 @@ def getDistBet2Pts(a='',b='') :
     return int(dXY)
 
 def processRobots(config = {} ) :
-    print(f'processRobots : DEBUT with config : {config}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'processRobots : DEBUT with config : {config}',file=sys.stderr,end="\n\n",flush=True)
     robots = config['robots']
     activeRobots = config['activeRobots']
     cibles = config['cibles']
@@ -75,38 +74,38 @@ def processRobots(config = {} ) :
             newregion = { nextregion : len(tmp) }
 
         nextregion = sorted(newregion.items(), key=lambda x:x[0], reverse=True)
-        print(f'processRobots :set de NextRegion si besoin : {nextregion[0][0]}',file = sys.stderr, flush = True )  
-        print(f'processRobots : Cases Cibles disponibles  : {cibles}', file = sys.stderr, flush=True)
+        #print(f'processRobots :set de NextRegion si besoin : {nextregion[0][0]}',file = sys.stderr, flush = True )  
+        #print(f'processRobots : Cases Cibles disponibles  : {cibles}', file = sys.stderr, flush=True)
         action = f"MOVE 1"
         if len(trous) * ( 10 / 3 ) > len(possible)  :     
             near = getNearTarget( x = fabs, y = ford, target = cibles, region = nextregion[0][0],used = used ) 
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             robots[key]['region'] = nextregion[0][0]
-            print(f'processRobots : Action change Regions for the robots {robots[key]}', file = sys.stderr, flush=True)
+            #print(f'processRobots : Action change Regions for the robots {robots[key]}', file = sys.stderr, flush=True)
         elif index == len(robots) -1 :
             near = getNearTarget( x = fabs, y = ford, target = cibles,used = used )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )  
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )  
             #print(f'Action if robots is the last for the Regions: {robots[key]}', file = sys.stderr, flush=True)     
         elif 0 >= (figthers * 100 / activeRobots ) < 10  or (figthers * 100 / activeRobots ) > 85 and  locateEnenmiesNear is not False :       
             robots[key]['choose'] = 'figthers'
             near = getNearTarget( x = fabs, y = ford, target = todestroy, used = used)
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'processRobots : Action create Figther for  {robots[key]}',file = sys.stderr, flush = True )
         elif index > len(robots) - facteurBlitz :
             near = getNearTarget( x = fabs, y = ford, target = blitz, used = used )
-            print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'Action change for blitz War for robot: {robots[key]}', file = sys.stderr, flush=True)
         else:
             near = getNearTarget( x = fabs, y = ford, target = cibles, used = used )
-            print(f'processRobots : Determination des Case NEAR  {near}',file = sys.stderr, flush = True )
+            #print(f'processRobots : Determination des Case NEAR  {near}',file = sys.stderr, flush = True )
             destination = chooseInNearList(choices = near, robot = robots[key], herbes = trous, used = used )
             used.append(destination)
             #print(f'processRobots : Action by default pour robot {robots[key]}', file = sys.stderr, flush=True)
@@ -114,9 +113,9 @@ def processRobots(config = {} ) :
         if destination :
             action += f" {destination}"      
 
-        print(f'processRobots : Action enregistré{ action } pour Robot {robots[key]}',file=sys.stderr,end="\n\n",flush=True)
+        #print(f'processRobots : Action enregistré{ action } pour Robot {robots[key]}',file=sys.stderr,end="\n\n",flush=True)
         robots[key]['action'] = action
-    print(f'processRobots : Fin with robots : {robots}',file=sys.stderr,end="\n\n",flush=True)        
+    #print(f'processRobots : Fin with robots : {robots}',file=sys.stderr,end="\n\n",flush=True)        
     return robots
 
 def getBox(zone=[], position = '', filter=None, recycling = False, statistics = False ) :
@@ -225,10 +224,10 @@ def getPositionRegion(hauteur=0,largeur=0, x=0, y=0 ) :
 
 def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
     max = sqrt((pow(largeur,2) + pow(hauteur,2)))
-    print(f'getNearTarget : DEBUT avec une amplitude  max de {max}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'getNearTarget : DEBUT avec une amplitude  max de {max}',file=sys.stderr,end="\n\n",flush=True)
     location = {}
     dist = 1
-    print(f'getNearTarget : CIBLE du pannel existant et disponible{target}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'getNearTarget : CIBLE du pannel existant et disponible{target}',file=sys.stderr,end="\n\n",flush=True)
     if region is not None :
         filterTarget = {}
         for k,v in target.items() :
@@ -248,9 +247,9 @@ def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
             if i > 0 and j > 0 :
                 resultat.append(f'{i} {j}')
 
-    print(f'getNearTarget : deteminetion du perimeètre du robot {resultat}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'getNearTarget : deteminetion du perimeètre du robot {resultat}',file=sys.stderr,end="\n\n",flush=True)
     for k,v in target.items() :
-        print(f'getNearTarget : parse target comparait au perimetre ==> {k}',file=sys.stderr,end="\n\n",flush=True)
+        #print(f'getNearTarget : parse target comparait au perimetre ==> {k}',file=sys.stderr,end="\n\n",flush=True)
         if k in resultat :
             ecart = getDistBet2Pts(a=f'{x} {y}',b=f'{v["abs"]} {v["ord"]}') 
             location = {tour:{}}
@@ -270,10 +269,10 @@ def getNearTarget( x=int(0), y=int(0), target = {}, region = None, used = [] ):
                 tmp = {'up' : v }
                 location[tour].update(tmp)
                 location[tour]['up'].update({'distance':ecart})
-            print(f'getNearTarget : choix après comparaison ==> {v} with {location[tour]} ',file=sys.stderr,end="\n\n",flush=True)
+            #print(f'getNearTarget : choix après comparaison ==> {v} with {location[tour]} ',file=sys.stderr,end="\n\n",flush=True)
  
         dist += 1
-    print(f'getNearTarget : Fin avec LOCATION ==> {location}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'getNearTarget : Fin avec LOCATION ==> {location}',file=sys.stderr,end="\n\n",flush=True)
     return location
 
 #taille de la carte pour init du jeu
@@ -385,7 +384,7 @@ while True:
             if recycler == 1 and owner == 1 :
                 nbrecycler += 1
     
-    print(f' Init : Robots En debut de tour {tour} : { robots }',file=sys.stderr,end="\n\n",flush=True)
+    #print(f' Init : Robots En debut de tour {tour} : { robots }',file=sys.stderr,end="\n\n",flush=True)
     #
     #traitement des unitées présente
     #
@@ -456,7 +455,7 @@ while True:
     for key in processedRobots.keys() :
         if len(processedRobots[key]['action']) > 0 :
             move += f"{ processedRobots[key]['action'] };"   
-    print(f'main : Processed Move : {move}',file=sys.stderr,end="\n\n",flush=True)
+    #print(f'main : Processed Move : {move}',file=sys.stderr,end="\n\n",flush=True)
     
     #
     #traitement des recyclers 
@@ -479,12 +478,12 @@ while True:
                             
     if ( f'{build}{spawn}{move}' != '' ) :
         #print(f"main : application des ordres : {build}{spawn}{move} = {len('{build}{spawn}{move}')}",file=sys.stderr,end="\n\n",flush=True)
-        print(f'{build}{spawn}{move}')
+        #print(f'{build}{spawn}{move}')
     elif ( f'{build}{spawn}{move}' == 'WAIT' ) :
-        print(f'MESSAGE What\'s the fluck with my code ^-^ ?!?!?')
+        #print(f'MESSAGE What\'s the fluck with my code ^-^ ?!?!?')
     else:
-         print(f'WAIT')
+         #print(f'WAIT')
 
-    print( f'Conclusion : temps Exec Time {time.time() - start_time}' ,file=sys.stderr,end="\n\n",flush=True)    
+    #print( f'Conclusion : temps Exec Time {time.time() - start_time}' ,file=sys.stderr,end="\n\n",flush=True)    
     tour += 1
         
