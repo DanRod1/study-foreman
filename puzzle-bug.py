@@ -14,14 +14,14 @@ isnegatif = False
 ispositif = False
 isnull = False
 isboth = False
-#for i in input().split():
-    # t: a temperature expressed as an integer ranging from -273 to 5526
-#    t = int(i)
-#    if t >= 0 :
-#        data['positif'].append(t)
-#    elif t <= 0:
-#        data['negatif'].append(t)
-data['positif'] = [5526]
+input = ['5526']
+for i in input:
+   # t: a temperature expressed as an integer ranging from -273 to 5526
+    t = int(i)
+    if t >= 0 :
+        data['positif'].append(t)
+    elif t <= 0:
+        data['negatif'].append(t)
 # Write an answer using print
 
 tmp = [ x for x in sorted(data['negatif'],reverse=True) ]
@@ -43,6 +43,9 @@ if isboth is True :
 elif isnegatif is True and ispositif is False :
     resultat = data['negatif'][0] 
     print(f"I am negatif { data['negatif'][0] } ", file=sys.stderr, flush=True)
+elif isnegatif is False and ispositif is True :
+    resultat = data['positif'][0] 
+    print(f"I am positif { data['positif'][0] } ", file=sys.stderr, flush=True)
 elif ispositif is True and isnegatif is True:
     resultat = data['positif'][0] 
     print(f"I am ispositif { data['positif'][0] } ", file=sys.stderr, flush=True)
