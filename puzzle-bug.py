@@ -1,55 +1,30 @@
 import sys
-import math
+import re
 
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
 
-#n = int(input())  # the number of temperatures to analyse
-n =1
-data = {}
-data['positif'] = []
-data['negatif'] = []
-data['null'] = []
-isnegatif = False
-ispositif = False
-isnull = False
-isboth = False
-input = ['5526']
-for i in input:
-   # t: a temperature expressed as an integer ranging from -273 to 5526
-    t = int(i)
-    if t >= 0 :
-        data['positif'].append(t)
-    elif t <= 0:
-        data['negatif'].append(t)
+s = 'Hello world'
+
+change_count = 4
+print(f"Debug {change_count}", file=sys.stderr, flush=True)
+tmp=list(s)
+
+with open('raw.txt', 'r') as f:
+    for line in f.readlines(): 
+        raw_change = line
+        deb,fin,car = raw_change.split('|')
+        if int(fin) <= len(s)-1 :
+            before = s[int(deb):int(fin)]
+            change = s[int(fin)]+car
+            after = s[int(fin)+1:len(s)]
+            s = before + car + after
+        else :
+            new = s[int(deb):int(fin)]+car
+            s = new
+res= ''.join(tmp)
+print(f"Debug {res} {tmp}", file=sys.stderr, flush=True)
 # Write an answer using print
+# To debug: print("Debug messages...", file=sys.stderr, flush=True)
 
-tmp = [ x for x in sorted(data['negatif'],reverse=True) ]
-data['negatif'] = tmp
-if len(data['negatif']) > 0 : isnegatif = True
-tmp = [ x for x in sorted(data['positif'])]
-data['positif'] = tmp
-if len(data['positif']) > 0 : ispositif = True
-tmp = [ x for x in sorted(data['null'])]
-if isnegatif is True and ispositif is True :
-    both = data['positif'][0] if data['positif'][0] < data['negatif'][0] * -1 else data['negatif'][0]
-    print(f" both {both} ", file=sys.stderr, flush=True)
-    isBoth = True
-print(f"data {data} isnegatif {isnegatif} ispositif {ispositif}", file=sys.stderr, flush=True)
-
-if isboth is True :
-    resultat = both
-    print(f"result du to isboth {both}", file=sys.stderr, flush=True)
-elif isnegatif is True and ispositif is False :
-    resultat = data['negatif'][0] 
-    print(f"I am negatif { data['negatif'][0] } ", file=sys.stderr, flush=True)
-elif isnegatif is False and ispositif is True :
-    resultat = data['positif'][0] 
-    print(f"I am positif { data['positif'][0] } ", file=sys.stderr, flush=True)
-elif ispositif is True and isnegatif is True:
-    resultat = data['positif'][0] 
-    print(f"I am ispositif { data['positif'][0] } ", file=sys.stderr, flush=True)
-else :
-    resultat = 0
-
-print(f"{resultat}")
+print(res)
