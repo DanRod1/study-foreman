@@ -1,12 +1,20 @@
 import sys
 from math import ceil,atan2,hypot,pi,floor
 class vector:
-    def __init__(self, my):
+    def __new__(cls, my=(),history={}):
+        print("1. Create a new instance of Vector.",file=sys.stderr, flush=True)
+        return super().__new__(cls)
+    def __init__(self,history={}) :
+        self.history = history
+        self.activeCP = -1
+        self.fireCP = -2
+        print("1. Init a new instance of Vector.",file=sys.stderr, flush=True)
+    def setup(self,my=()):
         self.x = my[0]
         self.y = my[1]
         self.angle = atan2(self.y, self.x)
         self.abs = hypot(self.x, self.y)
-        self.history = {}
+        self.discover = True
 
     def get_quadrant(self):
         """Get the quadrant a vector is facing."""
@@ -58,25 +66,25 @@ class vector:
     def getCheckpoint(self,cp=(0,0)) :
         keys = list(self.history.keys())
         values = []
-        discover = True
-        print(f"Debug getCheckpoint history : {self.history} and cp {cp} keys {keys}", file=sys.stderr, flush=True)
-        if cp not in keys :
+        print(f"Debug getCheckpoint discover : {self.discover} history : {self.history} and cp {cp} keys {keys}", file=sys.stderr, flush=True)
+        if ( cp not in keys or keys[0] == cp or keys[1:-2] == cp ) and self.discover is True:
             self.get_distanceCP(cp)
             self.history[cp] = self.distanceCP
-            discover = True
-            self.activeCP = -1
-            self.fireCP = -2
+            print(f"Debug getCheckpoint case discover {self.discover} : {self.activeCP} and fireCP {self.fireCP}", file=sys.stderr, flush=True)
         else :
             self.activeCP = keys.index(cp)
-            values = sorted(list(self.history.values()))
-            discover = False     
-        if discover is False:
-            self.fireCP = keys.index(values[-1])
-        print(f"Debug getCheckpoint history : {self.activeCP} and cps {self.fireCP}", file=sys.stderr, flush=True)
+            values = list(self.history.values())
+            self.discover = False    
+            print(f"Debug getCheckpoint case discover {self.discover} : {self.activeCP} and fireCP {self.fireCP}", file=sys.stderr, flush=True) 
+        if self.discover is False:
+            largest = sorted(values[-1])
+            self.fireCP = [ k for k,v in self.history.items() if v == largest ][0]
+        print(f"Debug getCheckpoint activeCP : {self.activeCP} and fireCP {self.fireCP}", file=sys.stderr, flush=True)
 
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
-
+strategy = vector()
+bastard = vector()
 while True:
     # next_checkpoint_x: x position of the next check point
     # next_checkpoint_y: y position of the next check point
@@ -84,13 +92,13 @@ while True:
     # next_checkpoint_angle: angle between your pod orientation and the direction of the next checkpoint
     x, y, next_checkpoint_x, next_checkpoint_y, next_checkpoint_dist, next_checkpoint_angle = [int(i) for i in input().split()]
     opponent_x, opponent_y = [int(i) for i in input().split()]
-    strategy = vector((x,y))
+    strategy.setup((x,y))
     strategy.get_quadrant()
     mypod = strategy.get_distance((opponent_x,opponent_y))
     strategy.getCheckpoint((next_checkpoint_x,next_checkpoint_y))
     print(f"Debug history is :'{strategy.history}'", file=sys.stderr, flush=True)
 
-    bastard= vector((opponent_x, opponent_y))
+    bastard.setup((opponent_x, opponent_y))
     bastard.get_quadrant()
     mybastardpod = bastard.get_distance((next_checkpoint_x,next_checkpoint_y))
 
@@ -114,6 +122,7 @@ while True:
         viragedb = False
         if ecart > 50 or ecart < 0 :
             power = 100
+            print(f"Debug case default Full Gas power {power}", file=sys.stderr, flush=True)
         else:
             power = 100 - floor(ecart/10)
             print(f"Debug case default Follow Bastard power {power}", file=sys.stderr, flush=True)
